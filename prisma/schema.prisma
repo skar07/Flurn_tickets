@@ -1,0 +1,22 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Seats {
+    id              Int    @id @default(autoincrement())
+    seat_identifier String @unique
+    seat_class      String @db.Char(1)
+    seat_price seat_pricing?
+}
+
+model seat_pricing {
+    id Int @id @default(autoincrement())
+    seat Seats? @relation(fields: [seat_id], references: [seat_identifier])
+    seat_id String @unique
+    seat_class String @db.Char(1)
+}
