@@ -1,32 +1,32 @@
 const express = require('express');
 const app = express()
-const { Client } = require('pg')
+const { poolConnect } = require('./connect')
 const bodyParser = require('body-parser')
 
+/** Middlewares */
+app.use(express.json())
 app.use(bodyParser.json())
 app.use(
     bodyParser.urlencoded({
         extended: true,
     })
-)
-const seatRoute = require('./routes/seats')
+);
+
+/** Routes */
+const seatsRouter = require('./routes/seats');
 app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
 })
-app.use('api/v1/seats', seatRoute)
+app.use('/api/v1/seats', seatsRouter)
 
+/** Connecting to the database and logging is connected with no error */
 const PORT = process.env.PORT || 3000
-
 const start = async () => {
-    const client = new Client({
-        user: process.env.USER,
-        host: process.env.HOST,
-        database: process.env.DB,
-        password: process.env.PASS,
-        port: process.env.DB_PORT,
-    })
     try {
-        await client.connect()
+        const client = await poolConnect();
+        const res = await client.query('SELECT current_database();')
+        console.log(res.rows[0].current_database) // Log current database from returned object
+        client.release()
         app.listen(PORT, () => {
             console.log(`Listening on port: ${PORT}`)
         })
