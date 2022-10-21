@@ -17,7 +17,7 @@ const seatsRouter = require('./routes/seats');
 app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
 })
-app.use('/api/v1/seats', seatsRouter)
+app.use('/api/v1/', seatsRouter)
 
 /** Connecting to the database and logging is connected with no error */
 const PORT = process.env.PORT || 3000
